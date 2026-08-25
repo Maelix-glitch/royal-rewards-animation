@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Crown, Gem, Flame, Sparkles, Lock, Check, Trophy, Star, Shield } from "lucide-react";
 import crownCrest from "@/assets/crown-crest.png";
+import filigree from "@/assets/filigree-divider.png";
+import velvet from "@/assets/velvet-texture.jpg";
+import type { MouseEvent as ReactMouseEvent } from "react";
 
 export const Route = createFileRoute("/rewards")({
   head: () => ({
@@ -61,6 +64,32 @@ const COURT = [
 
 const CURRENT_PETALS = 6240;
 
+const HONOURS = [
+  "28-day streak kept",
+  "Cycle logged 6 months",
+  "First Sapphire ascent",
+  "100 mood entries",
+  "Coach session completed",
+  "Season of Gold participant",
+];
+
+function handleTilt(e: ReactMouseEvent<HTMLElement>) {
+  const el = e.currentTarget;
+  const r = el.getBoundingClientRect();
+  const px = (e.clientX - r.left) / r.width - 0.5;
+  const py = (e.clientY - r.top) / r.height - 0.5;
+  el.style.setProperty("--ry", `${px * 10}deg`);
+  el.style.setProperty("--rx", `${-py * 10}deg`);
+  el.style.setProperty("--ty", "-8px");
+}
+
+function resetTilt(e: ReactMouseEvent<HTMLElement>) {
+  const el = e.currentTarget;
+  el.style.setProperty("--ry", "0deg");
+  el.style.setProperty("--rx", "0deg");
+  el.style.setProperty("--ty", "0px");
+}
+
 function RewardsPage() {
   const [mounted, setMounted] = useState(false);
   const [petals, setPetals] = useState(0);
@@ -98,6 +127,9 @@ function RewardsPage() {
   return (
     <main className="relative min-h-screen overflow-hidden px-5 py-8 md:px-10">
       <Aurora />
+      <VelvetVeil />
+      <Embers />
+      <CursorGlow />
 
       <div className="relative z-10 mx-auto w-full max-w-6xl">
         {/* Header */}
@@ -167,7 +199,7 @@ function RewardsPage() {
               width={816}
               height={816}
               className="absolute size-36 object-contain drop-shadow-[0_18px_40px_oklch(0.85_0.14_88/0.35)]"
-              style={{ animation: "float-slow 7s ease-in-out infinite" }}
+              style={{ animation: "float-slow 7s ease-in-out infinite, crest-glimmer 5s ease-in-out infinite" }}
             />
           </div>
 
@@ -222,7 +254,9 @@ function RewardsPage() {
             return (
               <article
                 key={tier.name}
-                className="royal-card group p-6 hover:-translate-y-2 hover:border-gold/60"
+                onMouseMove={handleTilt}
+                onMouseLeave={resetTilt}
+                className="royal-card tilt-card group p-6 hover:border-gold/60 hover:shadow-[var(--shadow-gold)]"
                 style={{ animation: `rise-in .7s cubic-bezier(.2,.8,.2,1) both`, animationDelay: `${i * 90}ms` }}
               >
                 <Shimmer />
@@ -255,6 +289,10 @@ function RewardsPage() {
             );
           })}
         </div>
+
+        <Divider />
+        <HonoursMarquee />
+        <Divider />
 
         {/* Treasury */}
         <SectionTitle eyebrow="The Vault" title="Claim Your Treasures" />
@@ -315,6 +353,7 @@ function RewardsPage() {
           ))}
         </div>
 
+        <Divider />
         <footer className="pb-10 text-center text-xs uppercase tracking-[0.35em] text-muted-foreground">
           Bloom · Season of Gold
         </footer>
@@ -344,52 +383,124 @@ function Shimmer() {
 }
 
 function SparkBurst() {
+  const bits = Array.from({ length: 12 }, (_, i) => {
+    const a = (i / 12) * Math.PI * 2;
+    return { x: Math.cos(a) * 46, y: Math.sin(a) * 46, d: i * 0.03 };
+  });
   return (
     <span className="pointer-events-none absolute inset-0">
-      {[15, 40, 65, 85].map((left, i) => (
+      <span
+        className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold/60"
+        style={{ animation: "ring-ripple 1.4s ease-out infinite" }}
+      />
+      {bits.map((b, i) => (
         <span
-          key={left}
-          className="absolute top-1/2 size-1 rounded-full bg-gold-soft"
-          style={{ left: `${left}%`, animation: `sparkle 1.2s ease-in-out ${i * 0.15}s infinite` }}
+          key={i}
+          className="absolute left-1/2 top-1/2 size-1.5 rounded-full bg-gold-soft"
+          style={{
+            ["--bx" as string]: `${b.x}px`,
+            ["--by" as string]: `${b.y}px`,
+            animation: `burst-out 1.2s ease-out ${b.d}s infinite`,
+          }}
         />
       ))}
     </span>
   );
 }
 
-function Aurora() {
+function VelvetVeil() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 opacity-[0.14] mix-blend-soft-light"
+      style={{
+        backgroundImage: `url(${velvet})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    />
+  );
+}
+
+function Embers() {
+  const embers = useMemo(
+    () =>
+      Array.from({ length: 22 }, (_, i) => ({
+        left: (i * 37) % 100,
+        size: 2 + ((i * 7) % 5),
+        delay: (i * 1.37) % 16,
+        dur: 14 + ((i * 3) % 12),
+        drift: ((i % 5) - 2) * 60,
+      })),
+    [],
+  );
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
-      <div
-        className="absolute -left-40 -top-40 size-[38rem] rounded-full blur-[120px]"
-        style={{
-          background: "radial-gradient(circle, oklch(0.5 0.19 300 / .45), transparent 65%)",
-          animation: "aurora-drift 18s ease-in-out infinite",
-        }}
+      {embers.map((e, i) => (
+        <span
+          key={i}
+          className="absolute bottom-0 rounded-full bg-gold-soft"
+          style={{
+            left: `${e.left}%`,
+            width: e.size,
+            height: e.size,
+            filter: "blur(0.5px)",
+            boxShadow: "0 0 12px oklch(0.9 0.13 90 / .8)",
+            ["--drift" as string]: `${e.drift}px`,
+            animation: `ember-rise ${e.dur}s linear ${e.delay}s infinite`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function CursorGlow() {
+  const [pos, setPos] = useState({ x: -400, y: -400 });
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, []);
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-500"
+      style={{
+        background: `radial-gradient(340px circle at ${pos.x}px ${pos.y}px, oklch(0.85 0.14 88 / .1), transparent 70%)`,
+      }}
+    />
+  );
+}
+
+function Divider() {
+  return (
+    <div className="my-14 flex justify-center">
+      <img
+        src={filigree}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        width={1536}
+        height={512}
+        className="h-16 w-full max-w-2xl object-contain opacity-70"
+        style={{ animation: "halo-pulse 7s ease-in-out infinite" }}
       />
-      <div
-        className="absolute -right-40 top-1/4 size-[34rem] rounded-full blur-[130px]"
-        style={{
-          background: "radial-gradient(circle, oklch(0.7 0.14 85 / .28), transparent 65%)",
-          animation: "aurora-drift 24s ease-in-out infinite reverse",
-        }}
-      />
-      <div
-        className="absolute bottom-0 left-1/3 size-[30rem] rounded-full blur-[140px]"
-        style={{
-          background: "radial-gradient(circle, oklch(0.55 0.15 220 / .25), transparent 65%)",
-          animation: "aurora-drift 30s ease-in-out infinite",
-        }}
-      />
-      <div
-        className="absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage:
-            "linear-gradient(oklch(1 0 0 / .6) 1px, transparent 1px), linear-gradient(90deg, oklch(1 0 0 / .6) 1px, transparent 1px)",
-          backgroundSize: "72px 72px",
-          maskImage: "radial-gradient(circle at 50% 20%, black, transparent 75%)",
-        }}
-      />
+    </div>
+  );
+}
+
+function HonoursMarquee() {
+  return (
+    <div className="relative overflow-hidden py-2 [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
+      <div className="flex w-max gap-10" style={{ animation: "marquee-x 32s linear infinite" }}>
+        {[...HONOURS, ...HONOURS].map((h, i) => (
+          <span key={i} className="flex items-center gap-3 whitespace-nowrap text-sm text-muted-foreground">
+            <Sparkles className="size-3.5 text-gold" />
+            {h}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
