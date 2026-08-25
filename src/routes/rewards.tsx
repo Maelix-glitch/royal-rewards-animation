@@ -83,8 +83,8 @@ function RewardsPage() {
 
   const { current, next, progress } = useMemo(() => {
     const idx = TIERS.reduce((acc, t, i) => (CURRENT_PETALS >= t.petals ? i : acc), 0);
-    const cur = TIERS[idx];
-    const nxt = TIERS[Math.min(idx + 1, TIERS.length - 1)];
+    const cur = TIERS[idx]!;
+    const nxt = TIERS[Math.min(idx + 1, TIERS.length - 1)]!;
     const span = Math.max(1, nxt.petals - cur.petals);
     return {
       current: cur,
