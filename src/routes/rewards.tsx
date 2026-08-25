@@ -356,3 +356,40 @@ function SparkBurst() {
     </span>
   );
 }
+
+function Aurora() {
+  return (
+    <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+      <div
+        className="absolute -left-40 -top-40 size-[38rem] rounded-full blur-[120px]"
+        style={{
+          background: "radial-gradient(circle, oklch(0.5 0.19 300 / .45), transparent 65%)",
+          animation: "aurora-drift 18s ease-in-out infinite",
+        }}
+      />
+      <div
+        className="absolute -right-40 top-1/4 size-[34rem] rounded-full blur-[130px]"
+        style={{
+          background: "radial-gradient(circle, oklch(0.7 0.14 85 / .28), transparent 65%)",
+          animation: "aurora-drift 24s ease-in-out infinite reverse",
+        }}
+      />
+      <div
+        className="absolute bottom-0 left-1/3 size-[30rem] rounded-full blur-[140px]"
+        style={{
+          background: "radial-gradient(circle, oklch(0.55 0.15 220 / .25), transparent 65%)",
+          animation: "aurora-drift 30s ease-in-out infinite",
+        }}
+      />
+      <div
+        className="absolute inset-0 opacity-[0.06]"
+        style={{
+          backgroundImage:
+            "linear-gradient(oklch(1 0 0 / .6) 1px, transparent 1px), linear-gradient(90deg, oklch(1 0 0 / .6) 1px, transparent 1px)",
+          backgroundSize: "72px 72px",
+          maskImage: "radial-gradient(circle at 50% 20%, black, transparent 75%)",
+        }}
+      />
+    </div>
+  );
+}
