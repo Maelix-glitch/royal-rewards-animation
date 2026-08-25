@@ -98,6 +98,9 @@ function RewardsPage() {
   return (
     <main className="relative min-h-screen overflow-hidden px-5 py-8 md:px-10">
       <Aurora />
+      <VelvetVeil />
+      <Embers />
+      <CursorGlow />
 
       <div className="relative z-10 mx-auto w-full max-w-6xl">
         {/* Header */}
@@ -222,7 +225,9 @@ function RewardsPage() {
             return (
               <article
                 key={tier.name}
-                className="royal-card group p-6 hover:-translate-y-2 hover:border-gold/60"
+                onMouseMove={handleTilt}
+                onMouseLeave={resetTilt}
+                className="royal-card tilt-card group p-6 hover:border-gold/60 hover:shadow-[var(--shadow-gold)]"
                 style={{ animation: `rise-in .7s cubic-bezier(.2,.8,.2,1) both`, animationDelay: `${i * 90}ms` }}
               >
                 <Shimmer />
@@ -255,6 +260,10 @@ function RewardsPage() {
             );
           })}
         </div>
+
+        <Divider />
+        <HonoursMarquee />
+        <Divider />
 
         {/* Treasury */}
         <SectionTitle eyebrow="The Vault" title="Claim Your Treasures" />
@@ -315,6 +324,7 @@ function RewardsPage() {
           ))}
         </div>
 
+        <Divider />
         <footer className="pb-10 text-center text-xs uppercase tracking-[0.35em] text-muted-foreground">
           Bloom · Season of Gold
         </footer>
