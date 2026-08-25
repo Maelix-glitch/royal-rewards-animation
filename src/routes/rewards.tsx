@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Crown, Gem, Flame, Sparkles, Lock, Check, Trophy, Star, Shield } from "lucide-react";
 import crownCrest from "@/assets/crown-crest.png";
+import filigree from "@/assets/filigree-divider.png";
+import velvet from "@/assets/velvet-texture.jpg";
+import type { MouseEvent as ReactMouseEvent } from "react";
 
 export const Route = createFileRoute("/rewards")({
   head: () => ({
@@ -60,6 +63,32 @@ const COURT = [
 ];
 
 const CURRENT_PETALS = 6240;
+
+const HONOURS = [
+  "28-day streak kept",
+  "Cycle logged 6 months",
+  "First Sapphire ascent",
+  "100 mood entries",
+  "Coach session completed",
+  "Season of Gold participant",
+];
+
+function handleTilt(e: ReactMouseEvent<HTMLElement>) {
+  const el = e.currentTarget;
+  const r = el.getBoundingClientRect();
+  const px = (e.clientX - r.left) / r.width - 0.5;
+  const py = (e.clientY - r.top) / r.height - 0.5;
+  el.style.setProperty("--ry", `${px * 10}deg`);
+  el.style.setProperty("--rx", `${-py * 10}deg`);
+  el.style.setProperty("--ty", "-8px");
+}
+
+function resetTilt(e: ReactMouseEvent<HTMLElement>) {
+  const el = e.currentTarget;
+  el.style.setProperty("--ry", "0deg");
+  el.style.setProperty("--rx", "0deg");
+  el.style.setProperty("--ty", "0px");
+}
 
 function RewardsPage() {
   const [mounted, setMounted] = useState(false);
@@ -400,6 +429,103 @@ function Aurora() {
           maskImage: "radial-gradient(circle at 50% 20%, black, transparent 75%)",
         }}
       />
+    </div>
+  );
+}
+
+function VelvetVeil() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 opacity-[0.14] mix-blend-soft-light"
+      style={{
+        backgroundImage: `url(${velvet})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    />
+  );
+}
+
+function Embers() {
+  const embers = useMemo(
+    () =>
+      Array.from({ length: 22 }, (_, i) => ({
+        left: (i * 37) % 100,
+        size: 2 + ((i * 7) % 5),
+        delay: (i * 1.37) % 16,
+        dur: 14 + ((i * 3) % 12),
+        drift: ((i % 5) - 2) * 60,
+      })),
+    [],
+  );
+  return (
+    <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+      {embers.map((e, i) => (
+        <span
+          key={i}
+          className="absolute bottom-0 rounded-full bg-gold-soft"
+          style={{
+            left: `${e.left}%`,
+            width: e.size,
+            height: e.size,
+            filter: "blur(0.5px)",
+            boxShadow: "0 0 12px oklch(0.9 0.13 90 / .8)",
+            ["--drift" as string]: `${e.drift}px`,
+            animation: `ember-rise ${e.dur}s linear ${e.delay}s infinite`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function CursorGlow() {
+  const [pos, setPos] = useState({ x: -400, y: -400 });
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, []);
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-500"
+      style={{
+        background: `radial-gradient(340px circle at ${pos.x}px ${pos.y}px, oklch(0.85 0.14 88 / .1), transparent 70%)`,
+      }}
+    />
+  );
+}
+
+function Divider() {
+  return (
+    <div className="my-14 flex justify-center">
+      <img
+        src={filigree}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        width={1536}
+        height={512}
+        className="h-16 w-full max-w-2xl object-contain opacity-70"
+        style={{ animation: "halo-pulse 7s ease-in-out infinite" }}
+      />
+    </div>
+  );
+}
+
+function HonoursMarquee() {
+  return (
+    <div className="relative overflow-hidden py-2 [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
+      <div className="flex w-max gap-10" style={{ animation: "marquee-x 32s linear infinite" }}>
+        {[...HONOURS, ...HONOURS].map((h, i) => (
+          <span key={i} className="flex items-center gap-3 whitespace-nowrap text-sm text-muted-foreground">
+            <Sparkles className="size-3.5 text-gold" />
+            {h}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
