@@ -199,7 +199,7 @@ function RewardsPage() {
               width={816}
               height={816}
               className="absolute size-36 object-contain drop-shadow-[0_18px_40px_oklch(0.85_0.14_88/0.35)]"
-              style={{ animation: "float-slow 7s ease-in-out infinite" }}
+              style={{ animation: "float-slow 7s ease-in-out infinite, crest-glimmer 5s ease-in-out infinite" }}
             />
           </div>
 
@@ -383,53 +383,28 @@ function Shimmer() {
 }
 
 function SparkBurst() {
+  const bits = Array.from({ length: 12 }, (_, i) => {
+    const a = (i / 12) * Math.PI * 2;
+    return { x: Math.cos(a) * 46, y: Math.sin(a) * 46, d: i * 0.03 };
+  });
   return (
     <span className="pointer-events-none absolute inset-0">
-      {[15, 40, 65, 85].map((left, i) => (
+      <span
+        className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold/60"
+        style={{ animation: "ring-ripple 1.4s ease-out infinite" }}
+      />
+      {bits.map((b, i) => (
         <span
-          key={left}
-          className="absolute top-1/2 size-1 rounded-full bg-gold-soft"
-          style={{ left: `${left}%`, animation: `sparkle 1.2s ease-in-out ${i * 0.15}s infinite` }}
+          key={i}
+          className="absolute left-1/2 top-1/2 size-1.5 rounded-full bg-gold-soft"
+          style={{
+            ["--bx" as string]: `${b.x}px`,
+            ["--by" as string]: `${b.y}px`,
+            animation: `burst-out 1.2s ease-out ${b.d}s infinite`,
+          }}
         />
       ))}
     </span>
-  );
-}
-
-function Aurora() {
-  return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
-      <div
-        className="absolute -left-40 -top-40 size-[38rem] rounded-full blur-[120px]"
-        style={{
-          background: "radial-gradient(circle, oklch(0.5 0.19 300 / .45), transparent 65%)",
-          animation: "aurora-drift 18s ease-in-out infinite",
-        }}
-      />
-      <div
-        className="absolute -right-40 top-1/4 size-[34rem] rounded-full blur-[130px]"
-        style={{
-          background: "radial-gradient(circle, oklch(0.7 0.14 85 / .28), transparent 65%)",
-          animation: "aurora-drift 24s ease-in-out infinite reverse",
-        }}
-      />
-      <div
-        className="absolute bottom-0 left-1/3 size-[30rem] rounded-full blur-[140px]"
-        style={{
-          background: "radial-gradient(circle, oklch(0.55 0.15 220 / .25), transparent 65%)",
-          animation: "aurora-drift 30s ease-in-out infinite",
-        }}
-      />
-      <div
-        className="absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage:
-            "linear-gradient(oklch(1 0 0 / .6) 1px, transparent 1px), linear-gradient(90deg, oklch(1 0 0 / .6) 1px, transparent 1px)",
-          backgroundSize: "72px 72px",
-          maskImage: "radial-gradient(circle at 50% 20%, black, transparent 75%)",
-        }}
-      />
-    </div>
   );
 }
 
