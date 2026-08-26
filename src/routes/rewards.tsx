@@ -408,6 +408,27 @@ function SparkBurst() {
   );
 }
 
+function Aurora() {
+  return (
+    <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+      <span
+        className="absolute -left-1/4 -top-1/3 size-[70vmax] rounded-full blur-[120px] opacity-40"
+        style={{
+          background: "radial-gradient(circle, oklch(0.55 0.19 295 / .6), transparent 65%)",
+          animation: "aurora-drift 26s ease-in-out infinite",
+        }}
+      />
+      <span
+        className="absolute -right-1/4 top-1/4 size-[60vmax] rounded-full blur-[130px] opacity-30"
+        style={{
+          background: "radial-gradient(circle, oklch(0.85 0.14 88 / .45), transparent 65%)",
+          animation: "aurora-drift 34s ease-in-out infinite reverse",
+        }}
+      />
+    </div>
+  );
+}
+
 function VelvetVeil() {
   return (
     <div
