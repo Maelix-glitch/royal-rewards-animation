@@ -74,6 +74,7 @@ const HONOURS = [
 ];
 
 function handleTilt(e: ReactMouseEvent<HTMLElement>) {
+  if (typeof window !== "undefined" && !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
   const el = e.currentTarget;
   const r = el.getBoundingClientRect();
   const px = (e.clientX - r.left) / r.width - 0.5;
