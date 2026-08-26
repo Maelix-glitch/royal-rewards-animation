@@ -74,6 +74,7 @@ const HONOURS = [
 ];
 
 function handleTilt(e: ReactMouseEvent<HTMLElement>) {
+  if (typeof window !== "undefined" && !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
   const el = e.currentTarget;
   const r = el.getBoundingClientRect();
   const px = (e.clientX - r.left) / r.width - 0.5;
@@ -204,8 +205,8 @@ function RewardsPage() {
           </div>
 
           <div>
-            <p className="mb-3 text-xs uppercase tracking-[0.4em] text-muted-foreground">Season of Gold · Rank {current.rank}</p>
-            <h1 className="text-gold text-5xl leading-[1.05] md:text-6xl">{current.name} Court</h1>
+            <p className="mb-3 text-[0.65rem] uppercase tracking-[0.3em] sm:text-xs sm:tracking-[0.4em] text-muted-foreground">Season of Gold · Rank {current.rank}</p>
+            <h1 className="text-gold text-4xl leading-[1.05] sm:text-5xl md:text-6xl">{current.name} Court</h1>
             <p className="mt-4 max-w-lg text-muted-foreground">
               Every logged day, tracked cycle and honest mood entry earns petals. Petals crown your rank,
               and rank unlocks the vault.
@@ -214,7 +215,7 @@ function RewardsPage() {
             <div className="mt-8 flex flex-wrap items-end gap-8">
               <div>
                 <div
-                  className="font-display text-5xl text-gold-soft"
+                  className="font-display text-4xl text-gold-soft sm:text-5xl"
                   style={{ animation: "count-glow 3.5s ease-in-out infinite" }}
                 >
                   {petals.toLocaleString()}
@@ -303,7 +304,7 @@ function RewardsPage() {
             return (
               <div
                 key={t.title}
-                className="royal-card flex items-center justify-between gap-5 p-6 hover:-translate-y-1"
+                className="royal-card flex flex-col items-start justify-between gap-4 p-6 hover:-translate-y-1 sm:flex-row sm:items-center sm:gap-5"
                 style={{ animation: `rise-in .7s cubic-bezier(.2,.8,.2,1) both`, animationDelay: `${i * 80}ms` }}
               >
                 <Shimmer />
@@ -314,7 +315,8 @@ function RewardsPage() {
                 </div>
                 <button
                   disabled={locked || isClaimed}
-                  onClick={() => setClaimed((c) => [...c, t.title])}
+                  aria-label={`${locked ? "Locked" : isClaimed ? "Claimed" : "Claim"}: ${t.title}`}
+                  onClick={() => setClaimed((c) => (c.includes(t.title) ? c : [...c, t.title]))}
                   className={`relative shrink-0 overflow-hidden rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 ${
                     locked
                       ? "cursor-not-allowed border border-border text-muted-foreground"
@@ -366,7 +368,7 @@ function SectionTitle({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <div className="mb-7">
       <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">{eyebrow}</p>
-      <h2 className="text-gold mt-1 text-4xl">{title}</h2>
+      <h2 className="text-gold mt-1 text-3xl sm:text-4xl">{title}</h2>
     </div>
   );
 }
@@ -405,6 +407,27 @@ function SparkBurst() {
         />
       ))}
     </span>
+  );
+}
+
+function Aurora() {
+  return (
+    <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+      <span
+        className="absolute -left-1/4 -top-1/3 size-[70vmax] rounded-full blur-[120px] opacity-40"
+        style={{
+          background: "radial-gradient(circle, oklch(0.55 0.19 295 / .6), transparent 65%)",
+          animation: "aurora-drift 26s ease-in-out infinite",
+        }}
+      />
+      <span
+        className="absolute -right-1/4 top-1/4 size-[60vmax] rounded-full blur-[130px] opacity-30"
+        style={{
+          background: "radial-gradient(circle, oklch(0.85 0.14 88 / .45), transparent 65%)",
+          animation: "aurora-drift 34s ease-in-out infinite reverse",
+        }}
+      />
+    </div>
   );
 }
 
