@@ -206,7 +206,7 @@ function RewardsPage() {
 
           <div>
             <p className="mb-3 text-xs uppercase tracking-[0.4em] text-muted-foreground">Season of Gold · Rank {current.rank}</p>
-            <h1 className="text-gold text-5xl leading-[1.05] md:text-6xl">{current.name} Court</h1>
+            <h1 className="text-gold text-4xl leading-[1.05] sm:text-5xl md:text-6xl">{current.name} Court</h1>
             <p className="mt-4 max-w-lg text-muted-foreground">
               Every logged day, tracked cycle and honest mood entry earns petals. Petals crown your rank,
               and rank unlocks the vault.
