@@ -299,7 +299,9 @@ function RewardsPage() {
         <SectionTitle eyebrow="The Vault" title="Claim Your Treasures" />
         <div className="mb-20 grid gap-5 md:grid-cols-2">
           {TREASURES.map((t, i) => {
-            const isClaimed = claimed.includes(t.title);
+            const claimedAt = claims[t.title];
+            const remaining = claimedAt ? Math.max(0, claimedAt + COOLDOWN_MS - now) : 0;
+            const cooling = remaining > 0;
             const locked = t.state === "locked";
             return (
               <div
@@ -312,26 +314,41 @@ function RewardsPage() {
                   <h3 className="text-xl">{t.title}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">{t.note}</p>
                   <p className="mt-2 text-sm text-gold-soft">{t.cost.toLocaleString()} petals</p>
+                  {cooling && (
+                    <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Timer className="size-3.5 text-gold/70" />
+                      Next claim in {formatCooldown(remaining)}
+                    </p>
+                  )}
                 </div>
                 <button
-                  disabled={locked || isClaimed}
-                  aria-label={`${locked ? "Locked" : isClaimed ? "Claimed" : "Claim"}: ${t.title}`}
-                  onClick={() => setClaimed((c) => (c.includes(t.title) ? c : [...c, t.title]))}
+                  disabled={locked || cooling}
+                  aria-label={`${locked ? "Locked" : cooling ? "On cooldown" : "Claim"}: ${t.title}`}
+                  onClick={() => setActive(t.title)}
                   className={`relative shrink-0 overflow-hidden rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 ${
                     locked
                       ? "cursor-not-allowed border border-border text-muted-foreground"
-                      : isClaimed
-                        ? "border border-gold/40 bg-gold/10 text-gold-soft"
+                      : cooling
+                        ? "cursor-not-allowed border border-gold/30 bg-gold/5 text-muted-foreground"
                         : "bg-[image:var(--gradient-gold)] text-primary-foreground hover:scale-105 hover:shadow-[var(--shadow-gold)]"
                   }`}
                 >
-                  {locked ? "Locked" : isClaimed ? "Claimed" : "Claim"}
-                  {isClaimed && <SparkBurst />}
+                  {locked ? "Locked" : cooling ? formatCooldown(remaining) : "Claim"}
                 </button>
               </div>
             );
           })}
         </div>
+
+        {activeTreasure && (
+          <ClaimModal
+            treasure={activeTreasure}
+            claimed={Boolean(claims[activeTreasure.title])}
+            onClaim={() => setClaims((c) => ({ ...c, [activeTreasure.title]: Date.now() }))}
+            onClose={() => setActive(null)}
+          />
+        )}
+
 
         {/* Court ranking */}
         <SectionTitle eyebrow="The Court" title="Rank Standings" />
