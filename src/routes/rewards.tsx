@@ -91,10 +91,32 @@ function resetTilt(e: ReactMouseEvent<HTMLElement>) {
   el.style.setProperty("--ty", "0px");
 }
 
+const COOLDOWN_MS = 5 * 60 * 1000;
+
+function formatCooldown(ms: number) {
+  const total = Math.ceil(ms / 1000);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
 function RewardsPage() {
   const [mounted, setMounted] = useState(false);
   const [petals, setPetals] = useState(0);
-  const [claimed, setClaimed] = useState<string[]>([]);
+  const [claims, setClaims] = useState<Record<string, number>>({});
+  const [activeTitle, setActive] = useState<string | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+
+  const activeTreasure = useMemo(
+    () => TREASURES.find((t) => t.title === activeTitle) ?? null,
+    [activeTitle],
+  );
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
 
   useEffect(() => {
     setMounted(true);
