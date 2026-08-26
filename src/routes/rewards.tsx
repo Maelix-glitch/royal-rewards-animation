@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Crown, Gem, Flame, Sparkles, Lock, Check, Trophy, Star, Shield } from "lucide-react";
+import { Crown, Gem, Flame, Sparkles, Lock, Check, Trophy, Star, Shield, Timer, X } from "lucide-react";
 import crownCrest from "@/assets/crown-crest.png";
 import filigree from "@/assets/filigree-divider.png";
 import velvet from "@/assets/velvet-texture.jpg";
@@ -564,5 +564,149 @@ function HonoursMarquee() {
         ))}
       </div>
     </div>
+  );
+}
+
+function ClaimModal({
+  treasure,
+  claimed,
+  onClaim,
+  onClose,
+}: {
+  treasure: { title: string; cost: number; note: string };
+  claimed: boolean;
+  onClaim: () => void;
+  onClose: () => void;
+}) {
+  const [stage, setStage] = useState<"confirm" | "claiming" | "done">(claimed ? "done" : "confirm");
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  useEffect(() => {
+    if (stage !== "claiming") return;
+    const id = setTimeout(() => {
+      onClaim();
+      setStage("done");
+    }, 900);
+    return () => clearTimeout(id);
+  }, [stage, onClaim]);
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Claim ${treasure.title}`}
+      className="fixed inset-0 z-50 grid place-items-center px-5"
+    >
+      <button
+        aria-label="Close"
+        onClick={onClose}
+        className="absolute inset-0 cursor-default bg-background/80 backdrop-blur-sm"
+        style={{ animation: "fade-in-soft .3s ease-out both" }}
+      />
+      <div
+        className="royal-card relative z-10 w-full max-w-md overflow-hidden p-8 text-center"
+        style={{ animation: "modal-pop .45s cubic-bezier(.2,.9,.25,1.2) both" }}
+      >
+        <Shimmer />
+        {stage === "done" && <Confetti />}
+        <button
+          onClick={onClose}
+          aria-label="Close dialog"
+          className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <X className="size-4" />
+        </button>
+
+        <div className="relative mx-auto grid size-20 place-items-center rounded-full border border-gold/40 bg-gold/10">
+          <span
+            className="absolute inset-0 rounded-full border border-gold/40"
+            style={{ animation: stage === "done" ? "ring-ripple 1.6s ease-out infinite" : undefined }}
+          />
+          {stage === "done" ? (
+            <Check className="size-8 text-gold" style={{ animation: "modal-pop .5s cubic-bezier(.2,.9,.25,1.4) both" }} />
+          ) : stage === "claiming" ? (
+            <Sparkles className="size-8 text-gold" style={{ animation: "spin-slow 1.2s linear infinite" }} />
+          ) : (
+            <Gem className="size-8 text-gold" />
+          )}
+        </div>
+
+        <h3 className="relative mt-6 text-2xl text-gold-soft">
+          {stage === "done" ? "Treasure Claimed" : treasure.title}
+        </h3>
+        <p className="relative mt-2 text-sm text-muted-foreground">
+          {stage === "done"
+            ? `${treasure.title} has been added to your vault. The vault reseals for ${formatCooldown(COOLDOWN_MS)}.`
+            : `${treasure.note} · ${treasure.cost.toLocaleString()} petals will be spent.`}
+        </p>
+
+        <div className="relative mt-7 flex justify-center gap-3">
+          {stage === "done" ? (
+            <button
+              onClick={onClose}
+              className="rounded-full bg-[image:var(--gradient-gold)] px-6 py-2.5 text-sm font-medium text-primary-foreground transition-transform duration-300 hover:scale-105"
+            >
+              Back to the Vault
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={onClose}
+                className="rounded-full border border-border px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Not yet
+              </button>
+              <button
+                disabled={stage === "claiming"}
+                onClick={() => setStage("claiming")}
+                className="rounded-full bg-[image:var(--gradient-gold)] px-6 py-2.5 text-sm font-medium text-primary-foreground transition-transform duration-300 hover:scale-105 disabled:opacity-70"
+              >
+                {stage === "claiming" ? "Claiming…" : "Confirm claim"}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Confetti() {
+  const bits = useMemo(
+    () =>
+      Array.from({ length: 44 }, (_, i) => ({
+        left: (i * 17) % 100,
+        delay: ((i * 53) % 60) / 100,
+        dur: 1.8 + ((i * 7) % 14) / 10,
+        drift: (((i * 31) % 100) - 50) * 1.6,
+        size: 4 + ((i * 5) % 5),
+        rot: (i * 47) % 360,
+        hue: [88, 300, 250, 160, 330][i % 5],
+      })),
+    [],
+  );
+  return (
+    <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+      {bits.map((b, i) => (
+        <span
+          key={i}
+          className="absolute -top-4 rounded-[2px]"
+          style={{
+            left: `${b.left}%`,
+            width: b.size,
+            height: b.size * 2,
+            background: `oklch(0.82 0.16 ${b.hue})`,
+            transform: `rotate(${b.rot}deg)`,
+            ["--drift" as string]: `${b.drift}px`,
+            animation: `confetti-fall ${b.dur}s cubic-bezier(.3,.6,.4,1) ${b.delay}s both`,
+          }}
+        />
+      ))}
+    </span>
   );
 }
