@@ -423,31 +423,6 @@ function Shimmer() {
   );
 }
 
-function SparkBurst() {
-  const bits = Array.from({ length: 12 }, (_, i) => {
-    const a = (i / 12) * Math.PI * 2;
-    return { x: Math.cos(a) * 46, y: Math.sin(a) * 46, d: i * 0.03 };
-  });
-  return (
-    <span className="pointer-events-none absolute inset-0">
-      <span
-        className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold/60"
-        style={{ animation: "ring-ripple 1.4s ease-out infinite" }}
-      />
-      {bits.map((b, i) => (
-        <span
-          key={i}
-          className="absolute left-1/2 top-1/2 size-1.5 rounded-full bg-gold-soft"
-          style={{
-            ["--bx" as string]: `${b.x}px`,
-            ["--by" as string]: `${b.y}px`,
-            animation: `burst-out 1.2s ease-out ${b.d}s infinite`,
-          }}
-        />
-      ))}
-    </span>
-  );
-}
 
 function Aurora() {
   return (
