@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Crown, Gem, Flame, Sparkles, Lock, Check, Trophy, Star, Shield, Timer, X } from "lucide-react";
 import crownCrest from "@/assets/crown-crest.png";
@@ -165,18 +165,24 @@ function RewardsPage() {
             <span className="font-display text-2xl tracking-wide text-gold-soft">Bloom</span>
           </div>
           <nav aria-label="Main navigation" className="flex flex-wrap gap-x-7 gap-y-2 text-sm">
-            {NAV.map((item) => (
-              <span
-                key={item}
-                className={
-                  item === "Rewards"
-                    ? "relative text-foreground after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-full after:bg-[image:var(--gradient-gold)]"
-                    : "cursor-default text-muted-foreground transition-colors hover:text-foreground"
-                }
-              >
-                {item}
-              </span>
-            ))}
+            {NAV.map((item) =>
+              item === "Coach" ? (
+                <Link key={item} to="/coach" className="text-muted-foreground transition-colors hover:text-foreground">
+                  {item}
+                </Link>
+              ) : (
+                <span
+                  key={item}
+                  className={
+                    item === "Rewards"
+                      ? "relative text-foreground after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-full after:bg-[image:var(--gradient-gold)]"
+                      : "cursor-default text-muted-foreground transition-colors hover:text-foreground"
+                  }
+                >
+                  {item}
+                </span>
+              ),
+            )}
           </nav>
         </header>
 
