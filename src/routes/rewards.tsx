@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Crown, Gem, Flame, Sparkles, Lock, Check, Trophy, Star, Shield, Timer, X } from "lucide-react";
 import crownCrest from "@/assets/crown-crest.png";
